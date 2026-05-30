@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Feedback - Local Community Event Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .feedback-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(16,24,40,0.04);
+        }
+        .feedback-container h1 {
+            color: #153e75;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .feedback-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0b2545;
+        }
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1565C0;
+            box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.05);
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: #a0aec0;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            grid-column: 1 / -1;
+        }
+        .validation-feedback {
+            font-size: 12px;
+            margin-top: 6px;
+            min-height: 18px;
+        }
+        .validation-feedback.error {
+            color: #e53e3e;
+        }
+        .validation-feedback.success {
+            color: #48bb78;
+        }
+        .fee-display {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            border-left: 4px solid #1565C0;
+            display: none;
+        }
+        .fee-display.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        .character-counter {
+            font-size: 12px;
+            color: #667eea;
+            margin-top: 6px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+        button {
+            flex: 1;
+            background-color: #1565C0;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.08s ease;
+        }
+        button:hover {
+            background-color: #0f4f8a;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .event-image-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 20px;
+            background-color: #f7fafc;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .event-image {
+            max-width: 300px;
+            height: 200px;
+            border: 3px solid #1565C0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .event-image:hover {
+            transform: scale(1.02);
+        }
+        .image-hint {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 8px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow: auto;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .close-btn:hover {
+            color: #e53e3e;
+            transform: none;
+        }
+        .enlarged-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+        .confirmation-message {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #c6f6d5;
+            color: #22543d;
+            border-radius: 6px;
+            border-left: 4px solid #48bb78;
+            display: none;
+        }
+        .confirmation-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="registration.html">Register</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="help.html" target="_blank">Help</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="feedback-container">
+            <h1>Event Feedback Form</h1>
+            <p style="text-align: center; color: #666;">Share your experience and help us improve future events</p>
+            <form id="feedbackForm" name="eventFeedback">
+                <div class="feedback-grid">
+                    <!-- Phone Number with Blur Validation -->
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input 
+                            type="tel" 
+                            id="phoneNumber" 
+                            name="phoneNumber" 
+                            placeholder="(555) 123-4567"
+                            pattern="[0-9\-\(\)\s]+"
+                            maxlength="20">
+                        <div id="phoneValidation" class="validation-feedback"></div>
+                        <p class="info-text">Format: (123) 456-7890 or 123-456-7890</p>
+                    </div>
+
+                    <!-- Event Dropdown with Fee Display (change event) -->
+                    <div class="form-group">
+                        <label for="eventFeedback">Which Event Did You Attend?</label>
+                        <select id="eventFeedback" name="eventFeedback">
+                            <option value="">-- Select Event --</option>
+                            <option value="Theater">Community Theater Night</option>
+                            <option value="Cleanup">Environmental Cleanup Drive</option>
+                            <option value="Potluck">Community Potluck Festival</option>
+                            <option value="BookClub"> Local Authors Book Club</option>
+                            <option value="FunRun">5K Community Fun Run</option>
+                        </select>
+                        <div id="feeDisplay" class="fee-display"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackEmail">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="feedbackEmail" 
+                            name="feedbackEmail" 
+                            placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventRating">Event Rating (1-5)</label>
+                        <select id="eventRating" name="eventRating">
+                            <option value="">-- Select Rating --</option>
+                            <option value="5">⭐⭐⭐⭐⭐ Excellent (5)</option>
+                            <option value="4">⭐⭐⭐⭐ Very Good (4)</option>
+                            <option value="3">⭐⭐⭐ Good (3)</option>
+                            <option value="2">⭐⭐ Fair (2)</option>
+                            <option value="1">⭐ Poor (1)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackMessage">Your Feedback</label>
+                        <textarea 
+                            id="feedbackMessage" 
+                            name="feedbackMessage" 
+                            placeholder="Tell us about your experience, what you liked, and areas for improvement..."
+                            maxlength="800"></textarea>
+                        <div class="character-counter">
+                            <span id="charCount">0/800</span> characters | 
+                            <span id="wordCount">0</span> words
+                        </div>
+                    </div>
+                    <div class="button-group">
+                        <button type="submit">Submit Feedback</button>
+                        <button type="reset">Clear Form</button>
+                    </div>
+                </div>
+            </form>
+            <div class="event-image-section">
+                <h3 style="color: #153e75; margin-top: 0;">Event Photo Gallery</h3>
+                <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Double-click on an image to enlarge it</p>
+                <div id="imageContainer" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                    <img src="festival.jpg" 
+                         alt="Event Photo 1" 
+                         class="event-image" 
+                         data-event="Event 1">
+                    <img src="fun run.jpg" 
+                         alt="Event Photo 2" 
+                         class="event-image" 
+                         data-event="Event 2">
+                    <img src="Theatre.jpg" 
+                         alt="Event Photo 3" 
+                         class="event-image" 
+                         data-event="Event 3">
+                </div>
+                <p class="image-hint">Click: Single click for info | Double-click: Enlarge</p>
+            </div>
+            <div id="confirmationMessage" class="confirmation-message">
+                <strong>✓ Thank you!</strong> Your feedback has been submitted successfully and will help us improve future events.
+            </div>
+        </div>
+        <div id="imageModal" class="modal">
+            <div class="modal-content">
+                <button class="close-btn">&times;</button>
+                <img id="enlargedImage" class="enlarged-image" src="" alt="Enlarged event photo">
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Local Community Event Portal. All rights reserved.</p>
+        <p>For support, <a href="help.html" target="_blank" style="color: #007bff; text-decoration: none;">visit our Help page</a></p>
+    </footer>
+    <script>
+        const eventFees = {
+            'Theater': 'Free',
+            'Cleanup': 'Free',
+            'Potluck': '$5 suggested donation',
+            'BookClub': 'Free',
+            'FunRun': '$15 registration fee'
+        };
+        const phoneInput = document.getElementById('phoneNumber');
+        const phoneValidation = document.getElementById('phoneValidation');
+        phoneInput.addEventListener('blur', function() {
+            const phoneValue = this.value.trim();
+            if (phoneValue === '') {
+                phoneValidation.textContent = '';
+                phoneValidation.className = 'validation-feedback';
+                return;
+            }
+            const phoneRegex = /^[\d\-\(\)\s]{10,}$/;
+            if (phoneRegex.test(phoneValue)) {
+                phoneValidation.textContent = '✓ Phone number is valid';
+                phoneValidation.className = 'validation-feedback success';
+            } else {
+                phoneValidation.textContent = '✗ Invalid phone number format';
+                phoneValidation.className = 'validation-feedback error';
+            }
+        });
+        const eventDropdown = document.getElementById('eventFeedback');
+        const feeDisplay = document.getElementById('feeDisplay');
+        eventDropdown.addEventListener('change', function() {
+            if (this.value) {
+                const selectedEvent = this.value;
+                const fee = eventFees[selectedEvent] || 'Price not available';
+                feeDisplay.innerHTML = `<strong>Event Fee:</strong> ${fee}`;
+                feeDisplay.classList.add('show');
+            } else {
+                feeDisplay.classList.remove('show');
+            }
+        });
+        const feedbackTextarea = document.getElementById('feedbackMessage');
+        const charCountDisplay = document.getElementById('charCount');
+        const wordCountDisplay = document.getElementById('wordCount');
+        feedbackTextarea.addEventListener('input', function() {
+            const text = this.value;
+            const charCount = text.length;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            charCountDisplay.textContent = `${charCount}/800`;
+            wordCountDisplay.textContent = wordCount;
+            if (charCount > 700) {
+                charCountDisplay.style.color = '#e53e3e';
+            } else if (charCount > 400) {
+                charCountDisplay.style.color = '#ed8936';
+            } else {
+                charCountDisplay.style.color = '#667eea';
+            }
+        });
+        feedbackTextarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                document.getElementById('feedbackForm').dispatchEvent(new Event('submit'));
+            }
+        });
+        const eventImages = document.querySelectorAll('.event-image');
+        eventImages.forEach(img => {
+            img.addEventListener('click', function(e) {
+                if (e.detail === 1) { // Single click
+                    const eventName = this.getAttribute('data-event');
+                    console.log('Single click on:', eventName);
+                }
+            });
+        });
+        eventImages.forEach(img => {
+            img.addEventListener('dblclick', function() {
+                const modal = document.getElementById('imageModal');
+                const enlargedImage = document.getElementById('enlargedImage');
+                enlargedImage.src = this.src;
+                enlargedImage.alt = this.alt;
+                modal.classList.add('show');
+            });
+        });
+        const modal = document.getElementById('imageModal');
+        const closeBtn = document.querySelector('.close-btn');
+        closeBtn.addEventListener('click', function() {
+            modal.classList.remove('show');
+        });
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+        const feedbackForm = document.getElementById('feedbackForm');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            confirmationMessage.classList.add('show');
+            confirmationMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => {
+                feedbackForm.reset();
+                charCountDisplay.textContent = '0/800';
+                wordCountDisplay.textContent = '0';
+                charCountDisplay.style.color = '#667eea';
+                phoneValidation.textContent = '';
+                feeDisplay.classList.remove('show');
+                confirmationMessage.classList.remove('show');
+                feedbackTextarea.focus();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

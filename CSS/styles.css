@@ -1,0 +1,232 @@
+/* styles.css - Consolidated external stylesheet with theming and typography */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@500;700&display=swap');
+
+:root {
+    /* Brand color tokens */
+    --brand-primary: #007BFF; /* HEX */
+    --brand-secondary: #00B3FF; /* HEX */
+    --brand-dark: #08306b; /* HEX */
+    --brand-accent-rgba: rgba(0, 123, 255, 0.12); /* RGBA */
+    --bg-fallback: #f5f8fa; /* HEX fallback for background */
+    --text-color: #333333;
+}
+
+/*Base/Layout & Background*/
+body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Tahoma, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    /* Fallback color then background image with a soft overlay for readability */
+    background-color: var(--bg-fallback);
+    background-image: linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)), url('festival.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Improve default paragraph/description readability */
+p, .info-text {
+    font-size: 1rem;
+    line-height: 1.65;
+    letter-spacing: 0.2px;
+    color: rgba(0,0,0,0.85);
+}
+
+/* Lead/description style */
+.lead {
+    font-size: 1.05rem;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/*Navigation */
+nav {
+    background-color: var(--brand-dark);
+    padding: 0;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li { margin: 0; }
+
+nav ul li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    padding: 15px 20px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover { background-color: #555; }
+
+@media (max-width: 600px) {
+    nav ul { flex-direction: column; gap: 8px; }
+}
+
+/*Headings/Typography*/
+/* Headings use a display font and tuned sizes */
+h1, h2, h3 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    margin: 0 0 0.5rem 0;
+}
+
+h1 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.6px; line-height: 1.12; }
+h2 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.2px; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+
+/* Gradient text for section headers */
+section h1, section h2 {
+    background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Transform and alignment helpers */
+.muted { color: rgba(0,0,0,0.6); }
+.uppercase { text-transform: uppercase; letter-spacing: 1px; }
+.center { text-align: center; }
+
+/*Feature list*/
+.feature-list { list-style-type: none; padding: 0; margin: 0 0 20px 0; }
+.feature-list li { padding: 10px 0; border-bottom: 1px solid #ddd; }
+.feature-list li:before { content: "✓ "; color: var(--brand-primary); font-weight: bold; margin-right: 10px; }
+
+/* Utilities & Components*/
+.highlight { background-color: #fffacd; color: #333; padding: 10px 15px; border-radius: 4px; display: inline-block; font-weight: bold; }
+.cta-button { background-color: var(--brand-primary); color: white; padding: 10px 18px; border-radius: 6px; border: none; cursor: pointer; display: inline-block; text-decoration: none; margin-top: 12px; }
+
+/*Footer*/
+footer { background-color: var(--brand-dark); color: white; text-align: center; padding: 20px; margin-top: 40px; border-radius: 4px; }
+
+/* Section block used site-wide */
+section { margin: 30px 0; padding: 20px; background-color: rgba(255,255,255,0.9); border-left: 4px solid var(--brand-primary); border-radius: 4px; }
+
+/*News / Multi-column layout*/
+.news-article {
+    column-count: 2;
+    column-gap: 30px;
+    column-rule: 1px solid rgba(0,0,0,0.12);
+    /* Prevent images and headings from breaking awkwardly between columns */
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+}
+.news-article h2, .news-article p {
+    break-inside: avoid-column;
+    -webkit-column-break-inside: avoid;
+}
+
+/* ===== Gallery images: default sizing (will be overridden by media queries below) ===== */
+.gallery-image {
+    width: 260px; /* fixed visual size for gallery */
+    height: 160px;
+    max-width: 100%;
+    object-fit: cover;
+    border: 3px solid var(--brand-primary);
+    border-radius: 6px;
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+/*Responsive adjustments*/
+/* General responsive break at 768px for tablets and smaller */
+@media (max-width: 768px) {
+    /* Stack navigation vertically */
+    nav ul { flex-direction: column; gap: 8px; }
+
+    /* Reduce main heading and subheading sizes for smaller screens */
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.25rem; }
+
+    /* Make gallery images more compact */
+    .gallery-image { width: 180px; height: auto; }
+
+    /* Reduce padding/margins to better fit narrow viewports */
+    section { padding: 14px; margin: 18px 0; }
+
+    /* News column collapse to single column on small screens */
+    .news-article { column-count: 1; column-gap: 18px; }
+}
+
+/* Use flexible layout for contact/info cards using CSS Grid */
+.contact-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* Make images responsive by default */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Use viewport units for hero spacing where appropriate (example) */
+#welcomeBanner { padding: 4vh 2vw; }
+
+/* (moved default .gallery-image earlier) */
+
+
+/*Table Styling*/
+/* Clean, centered tables with zebra striping for readability */
+table, .gallery-table {
+    width: 100%;
+    border-collapse: collapse; /* removes double borders */
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+table th, table td, .gallery-table th, .gallery-table td {
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 12px 14px;
+    background-color: rgba(255,255,255,0.95);
+}
+
+.gallery-table tr:nth-child(even) td,
+table tr:nth-child(even) td {
+    background-color: rgba(0,0,0,0.03); /* subtle zebra */
+}
+
+/* Optional: header row emphasis */
+table th, .gallery-table th {
+    background: linear-gradient(90deg, rgba(0,123,255,0.12), rgba(0,179,255,0.08));
+    font-weight: 600;
+}
+
+/*Box Model & Layout Controls*/
+/* Event card spacing, border and shadow for readable cards */
+.event-card, .eventCard {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.08);
+    padding: 18px;
+    margin: 16px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    text-align: center;
+}
+
+/* Outline utility for highlighting focused or selected fields */
+input:focus, textarea:focus, select:focus, .outline-highlight {
+    outline: 3px solid rgba(0,123,255,0.25);
+    outline-offset: 2px;
+}
+
+/* Visibility utilities — demonstrate the difference between visibility and display */
+/* `.vis-hidden` preserves layout but hides element; `.vis-none` removes it from layout */
+.vis-hidden { visibility: hidden; }
+.vis-none { display: none; }
+
+/* Helper comments: use `.vis-hidden` when you want to toggle visibility without reflow,
+   and `.vis-none` when you want the element removed completely from document flow. */
+

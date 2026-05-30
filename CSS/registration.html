@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration - Local Community Event Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .registration-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(16, 24, 40, 0.04);
+        }
+        .registration-container h1 {
+            color: #153e75;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #0b2545;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1565C0;
+            box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.05);
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: #a0aec0;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .required::after {
+            content: " *";
+            color: #e53e3e;
+        }
+        .form-group input:invalid,
+        .form-group select:invalid,
+        .form-group textarea:invalid {
+            border-color: #f56565;
+        }
+        .form-group input:valid,
+        .form-group select:valid,
+        .form-group textarea:valid {
+            border-color: #48bb78;
+        }
+        .submit-btn {
+            width: 100%;
+            background-color: #1565C0;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.08s ease;
+        }
+        .submit-btn:hover {
+            background-color: #0f4f8a;
+            transform: translateY(-2px);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        .confirmation-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            display: none;
+            border-left: 4px solid #48bb78;
+        }
+        .confirmation-section.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        output {
+            display: block;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e6f2ff;
+            border-radius: 6px;
+            color: #153e75;
+            font-weight: 600;
+        }
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+        .video-section {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .video-section h2 {
+            color: #153e75;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .video-section video {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        #videoStatus {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e6ffed;
+            border-left: 4px solid #48bb78;
+            border-radius: 6px;
+            color: #276749;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .clear-btn {
+            width: 100%;
+            background-color: #e53e3e;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.2s ease;
+        }
+        .clear-btn:hover { background-color: #c53030; }
+        .geo-section {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .geo-section h2 {
+            color: #153e75;
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+        .geo-btn {
+            background-color: #1565C0;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .geo-btn:hover { background-color: #0f4f8a; }
+        #geoResult {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            display: none;
+        }
+        #geoResult.success {
+            background-color: #e6ffed;
+            border-left: 4px solid #48bb78;
+            color: #276749;
+        }
+        #geoResult.error {
+            background-color: #fff5f5;
+            border-left: 4px solid #e53e3e;
+            color: #c53030;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="registration.html">Register</a></li>
+            <li><a href="feedback.html">Feedback</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="help.html" target="_blank">Help</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="registration-container">
+            <h1>Event Registration Form</h1>
+            <p style="text-align: center; color: #666;">Fill out the form below to register for your preferred event</p>
+
+            <div class="video-section">
+                <h2>Event Promo</h2>
+                <video
+                    id="promoVideo"
+                    controls
+                    oncanplay="document.getElementById('videoStatus').style.display='block'">
+                    <source src="festival.jpg" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div id="videoStatus">Video ready to play!</div>
+            </div>
+            <form id="registrationForm" name="eventRegistration">
+                <div class="form-group">
+                    <label for="fullName" class="required">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" autofocus
+                        required>
+                    <p class="info-text">Your legal name as it appears on identification</p>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail" class="required">Email Address</label>
+                    <input type="email" id="userEmail" name="userEmail" placeholder="your.email@example.com" required>
+                    <p class="info-text">We'll send confirmation details to this email</p>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate" class="required">Event Date</label>
+                    <input type="date" id="eventDate" name="eventDate" required>
+                    <p class="info-text">Select the date of the event you wish to attend</p>
+                </div>
+                <div class="form-group">
+                    <label for="eventType" class="required">Event Type</label>
+                    <select id="eventType" name="eventType" required>
+                        <option value="">-- Select an Event --</option>
+                        <option value="Theater Night">Community Theater Night</option>
+                        <option value="Cleanup Drive">Environmental Cleanup Drive</option>
+                        <option value="Potluck Festival">Community Potluck Festival</option>
+                        <option value="Book Club">Local Authors Book Club</option>
+                        <option value="Fun Run">5K Community Fun Run</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="userMessage">Additional Message (Optional)</label>
+                    <textarea id="userMessage" name="userMessage"
+                        placeholder="Share any additional information or questions about the event..."
+                        maxlength="500"></textarea>
+                    <p class="info-text" id="charCount">0/500 characters</p>
+                </div>
+                <button type="submit" class="submit-btn">Register for Event</button>
+                <button type="button" class="clear-btn" id="clearPrefsBtn">Clear Preferences</button>
+            </form>
+            <div id="confirmationSection" class="confirmation-section">
+                <h3 style="color: #153e75; margin-top: 0;">Registration Confirmation</h3>
+                <output id="confirmationOutput" form="registrationForm">
+                    Your registration details will appear here
+                </output>
+                <p style="color: #666; margin-top: 15px; font-size: 14px;">
+                    A confirmation email has been sent to your address. Please check your inbox and spam folder.
+                </p>
+            </div>
+
+            <div class="geo-section">
+                <h2>Find Nearby Events</h2>
+                <p style="color:#666; font-size:14px; margin: 0 0 12px;">Allow location access to find events near you</p>
+                <button class="geo-btn" id="geoBtn">📍 Find Nearby Events</button>
+                <div id="geoResult"></div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Local Community Event Portal. All rights reserved.</p>
+        <p>For support, <a href="help.html" target="_blank" style="color: #007bff; text-decoration: none;">visit our
+                Help page</a></p>
+    </footer>
+    <script>
+        const messageField = document.getElementById('userMessage');
+        const charCountDisplay = document.getElementById('charCount');
+        const eventTypeSelect = document.getElementById('eventType');
+        const savedEventType = localStorage.getItem('preferredEventType');
+        if (savedEventType) {
+            eventTypeSelect.value = savedEventType;
+        }
+        eventTypeSelect.addEventListener('change', function () {
+            localStorage.setItem('preferredEventType', this.value);
+            sessionStorage.setItem('sessionEventType', this.value);
+        });
+        document.getElementById('clearPrefsBtn').addEventListener('click', function () {
+            localStorage.clear();
+            sessionStorage.clear();
+            eventTypeSelect.value = '';
+            alert('Preferences cleared.');
+        });
+        messageField.addEventListener('input', function () {
+            const currentLength = this.value.length;
+            charCountDisplay.textContent = `${currentLength}/500 characters`;
+            if (currentLength > 400) {
+                charCountDisplay.style.color = '#e53e3e'; 
+            } else if (currentLength > 250) {
+                charCountDisplay.style.color = '#ed8936'; 
+            } else {
+                charCountDisplay.style.color = '#667eea';
+            }
+        });
+        const registrationForm = document.getElementById('registrationForm');
+        const confirmationSection = document.getElementById('confirmationSection');
+        const confirmationOutput = document.getElementById('confirmationOutput');
+        let formDirty = false;
+        registrationForm.addEventListener('input', function() {
+            formDirty = true;
+        });
+        window.addEventListener('beforeunload', function(e) {
+            if (formDirty) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved registration details. Are you sure you want to leave?';
+            }
+        });
+        registrationForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const userEmail = document.getElementById('userEmail').value;
+            const eventDate = document.getElementById('eventDate').value;
+            const eventType = document.getElementById('eventType').value;
+            const userMessage = document.getElementById('userMessage').value;
+            const dateObj = new Date(eventDate);
+            const formattedDate = dateObj.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const confirmationText = `
+                <strong>Thank you for registering!</strong><br><br>
+                <strong>Name:</strong> ${fullName}<br>
+                <strong>Email:</strong> ${userEmail}<br>
+                <strong>Event:</strong> ${eventType}<br>
+                <strong>Date:</strong> ${formattedDate}
+                ${userMessage ? `<br><strong>Your Message:</strong> "${userMessage}"` : ''}
+            `;
+            confirmationOutput.innerHTML = confirmationText;
+            confirmationSection.classList.add('show');
+            confirmationSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            formDirty = false;
+            setTimeout(() => {
+                registrationForm.reset();
+                charCountDisplay.textContent = '0/500 characters';
+                charCountDisplay.style.color = '#667eea';
+                messageField.focus();
+            }, 2000);
+        });
+        document.getElementById('geoBtn').addEventListener('click', function () {
+            const geoResult = document.getElementById('geoResult');
+            geoResult.className = '';
+            geoResult.style.display = 'block';
+            geoResult.textContent = 'Locating you...';
+
+            if (!navigator.geolocation) {
+                geoResult.className = 'error';
+                geoResult.textContent = 'Geolocation is not supported by your browser.';
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const lat = position.coords.latitude.toFixed(5);
+                    const lon = position.coords.longitude.toFixed(5);
+                    const acc = Math.round(position.coords.accuracy);
+                    geoResult.className = 'success';
+                    geoResult.innerHTML = `Location found!<br>Latitude: ${lat}<br>Longitude: ${lon}<br>Accuracy: ±${acc} meters`;
+                },
+                function (error) {
+                    geoResult.className = 'error';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            geoResult.textContent = 'Permission denied. Please allow location access and try again.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            geoResult.textContent = 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            geoResult.textContent = 'Request timed out. Please try again.';
+                            break;
+                        default:
+                            geoResult.textContent = 'An unknown error occurred.';
+                    }
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 8000,
+                    maximumAge: 0
+                }
+            );
+        });
+    </script>
+</body>
+</html>
